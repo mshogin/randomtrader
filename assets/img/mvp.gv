@@ -1,0 +1,94 @@
+digraph D {
+
+
+event_generator [label="Event Generator"];
+subgraph cluster_10 {
+  node [shape=box,style=filled];
+  label="Event generator service";
+  color=grey;
+
+  event_generator;
+}
+event_generator -> feature_manager;
+event_generator -> metrics [style=dotted];
+
+
+feature_manager [label="Features manager"];
+price [label="Currency price", style=filled];
+other_features [label="Some features", style=filled];
+subgraph cluster_30 {
+  node [style=filled];
+  label="Features service";
+  color=grey;
+
+  feature_manager;
+  feature_manager -> price;
+  feature_manager -> other_features;
+}
+feature_manager -> decision_maker;
+feature_manager -> metrics [style=dotted];
+
+
+decision_maker [label="Decision machine"];
+nn_regression [label="Regression NN",style=filled];
+nn_another [label="Any another NN",style=filled];
+subgraph cluster_40 {
+  node [style=filled];
+  label="Decision maker service";
+  color=grey;
+
+  decision_maker;
+  decision_maker -> nn_regression;
+  decision_maker -> nn_another;
+}
+decision_maker -> order_manager;
+decision_maker -> metrics [style=dotted];
+
+
+order_manager [label="Order manager"];
+subgraph cluster_50 {
+  node [shape=box,style=filled];
+  label="Order manager service";
+  color=grey;
+
+  order_manager;
+}
+order_manager -> broker;
+order_manager -> metrics [style=dotted];
+
+
+broker [label="Broker"];
+bts [label="Bitstamp",style=filled];
+any_ex [label="Any other exchange (top 20)",style=filled];
+subgraph cluster_60 {
+  node [shape=box,style=filled];
+  label="Exchange broker service";
+  color=grey;
+
+  broker;
+  broker -> bts;
+  broker -> any_ex;
+}
+broker -> metrics [style=dotted];
+
+status [lable="Status service"];
+subgraph cluster_70 {
+  node [shape=box,style=filled];
+  label="Status service";
+  color=grey;
+
+  status;
+}
+status -> metrics [style=dotted];
+
+metrics [lable="Metrics service"];
+subgraph cluster_80 {
+  node [shape=box,style=filled];
+  label="Metrics";
+  color=grey;
+
+  metrics;
+}
+
+
+}

@@ -1,0 +1,20 @@
+randomtrader (0.3.4) unstable; urgency=medium
+
+  * Add dashboard
+
+ -- Mike Shogin <mshogin@gmail.com>  Mon, 25 May 2020 02:12:07 +0200
+
+randomtrader (0.1.6) unstable; urgency=medium
+
+  * Publish builds in gh releases
+  * Test production launch
+  * Test production launch
+  * Test production launch
+
+ -- Mike Shogin <mshogin@gmail.com>  Fri, 15 May 2020 03:38:33 +0200
+
+randomtrader (0.0.1) unstable; urgency=medium
+
+  * Initial implementation
+
+ -- Mikhail Shogin <mshogin@gmail.com>  Wed, 12 May 2020 01:37:39 +0200

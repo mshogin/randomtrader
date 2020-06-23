@@ -1,0 +1,10 @@
+Source: randomtrader
+Section: free
+Priority: optional
+Maintainer: Mikhail Shogin <mshogin@gmail.com>
+Build-Depends: debhelper, dh-systemd, dpkg-dev
+
+Package: randomtrader
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: RandomTrader trading bot

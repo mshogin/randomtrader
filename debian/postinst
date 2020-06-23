@@ -1,0 +1,5 @@
+#!/bin/sh
+
+adduser --system --group --no-create-home randomtrader
+systemctl daemon-reload
+systemctl restart randomtrader

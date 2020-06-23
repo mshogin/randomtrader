@@ -1,0 +1,22 @@
+digraph D {
+
+producer [label="Features producer"]
+subgraph cluster_31 {
+  node [style=filled];
+  label="Features producer";
+  color=grey;
+  timer->producer;
+}
+producer->price;
+
+price [label="Currency ask/bid", style=filled];
+subgraph cluster_32 {
+  node [style=filled];
+  label="Bitstamp Price feature";
+  color=grey;
+
+  price->broker->exchange->last_transaction;
+  price->storage->save_transaction;
+}
+
+}

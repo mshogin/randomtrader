@@ -1,0 +1,38 @@
+matrix:
+  include:
+    - language: go
+      addons:
+        apt:
+          packages:
+            - fakeroot
+            - debhelper
+            - dh-systemd
+      dist: xenial
+      name: 'RandomTrader [back-end] [linux] [64-bit]'
+      go:
+        - 1.14.x
+      env:
+        - GO111MODULE=on
+      install: true
+      cache:
+        directories:
+          - $GOPATH/pkg/mod
+      services:
+        - mongodb
+      script:
+        - make test
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
+      deploy:
+        - provider: script
+          script:
+            - dpkg-buildpackage -us -uc -b 
+          on:
+            tags: true
+        - provider: releases
+          api_key:
+            secure: "UFpyWwa/U9xKmOnde6SCDS92LvoT9aauGyZqB+aMpBQN+3k4wp0zMmWBffg+GZt+Z0nLk7MofxZV+lTm65PQZJmqYQgXnL92np/jg6gSduC1TnCwS9l3aX7K0DarFpSDYfv0ZV7ic4ZCflJGM5wJ0JGm9euII3sxZh18/7he1Z3zRwwLsVzMq/IXSJFVsZFONQ/PVOGbd6Z33ophcCQEfI7wEOVwIdd/9OrP3aC+RnNQIIdL6mhQEZuQ/K/Grzi5jgjbuq7s2IlvCtsvE0x4pLezeQzYzg47dKRQk0yk2P4fjciJQUnb6YL6jKt8/63EWY2ZAgbD+HBTSaJE5e9YPnoW4Cx/LyWN5zTfSAS20n3sSvCxp2zweMIF+C0p3U4mpZoJVqKLqTVvpzkwxECIr+lVQeOLDbmUpnpJ7zUkfKd+cJC8YrL/iNfWe1prlEWqrzL9qUn/8nspnsKqACRF2znkzkEBk9WyjI+5oLeXBcdvMWP7tbpUmSnvvHAALEtEUUR0iMX4UKC++pj/2sdikX/42ShszB72ykwtP21OTIYja1ukLh/3V5Kyv328ttA8rkf1M8XTVH+tM9U227QtWowGaHz43rvAim8eyDnRSe9fTKdVddK+LaZuRqT7v/3zTzkQ+e1ABhh+PWVNgdy2FLn4Wvyepg+dcq0ck8WQqPQ="
+          file: "../randomtrader_${TRAVIS_TAG}_amd64.deb"
+          skip_cleanup: true
+          on:
+            tags: true

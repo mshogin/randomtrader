@@ -1,0 +1,7 @@
+{
+    "EventRaiseInterval": 5,
+    "CurrencyPair": "BTC-USD",
+    "OrderSize": 27,
+    "Exchange": "bitstamp",
+    "MinimumOrderSize": 25
+}

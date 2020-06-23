@@ -1,0 +1,6 @@
+{
+  "EventRaiseInterval": 1,
+  "TestBrokerMode": true,
+  "StatusPort": "1",
+  "StorageName": "test"
+}

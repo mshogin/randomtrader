@@ -1,0 +1,28 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+#
+#  # Uncomment this to turn on verbose mode.
+# export DH_VERBOSE=1
+
+GOBIN=$(CURDIR)/cmd/randomtrader
+
+PKGDIR=debian/randomtrader
+
+clean:
+	make clean
+	dh_clean
+
+build:  clean
+	make 
+
+binary:
+	dh $@ --with-systemd
+	dh_prep
+	dh_installchangelogs
+	dh_compress
+	dh_fixperms
+	dh_install
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
