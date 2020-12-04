@@ -28,12 +28,6 @@ func ProcessContext(ctx *bidcontext.BidContext) error {
 	return nil
 }
 
-type InefficientQuoteBalance struct {
-	Amount  float64
-	Bid     float64
-	Balance float64
-}
-
 func validateQuoteBalance(ctx *bidcontext.BidContext) error {
 	if ctx.Event != config.BuyEvent {
 		return nil
