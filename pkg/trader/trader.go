@@ -14,6 +14,7 @@ var (
 )
 
 func Run() {
+	rand.Seed(time.Now().UTC().UnixNano())
 	go func() {
 		bidAskTimer := time.NewTicker(config.GetEventsRaiseInterval())
 		runnig := true
@@ -24,8 +25,7 @@ func Run() {
 			case <-doneEventLoop:
 				runnig = false
 			case <-bidAskTimer.C:
-				e := config.EnabledEvents[rand.Intn(len(config.EnabledEvents))]
-				go processContext(bidcontext.NewBidContext(e))
+				go processContext(bidcontext.NewBidContext())
 			}
 		}
 		<-doneEventLoop

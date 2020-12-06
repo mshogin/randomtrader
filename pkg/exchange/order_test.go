@@ -17,7 +17,8 @@ func TestExecuteContext(t *testing.T) {
 	setupClient = setupTestClient
 
 	for _, e := range []config.Event{config.BuyEvent, config.SellEvent} {
-		ctx := bidcontext.NewBidContext(e)
+		ctx := bidcontext.NewBidContext()
+		ctx.Event = e
 		s.NoError(ExecuteContext(ctx))
 		s.NotEmpty(ctx.OrderID)
 	}

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/mshogin/randomtrader/pkg/bidcontext"
-	"github.com/mshogin/randomtrader/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +16,7 @@ func TestProcessContext(t *testing.T) {
 	}()
 	setupClient = setupTestClient
 
-	ctx := bidcontext.NewBidContext(config.BuyEvent)
+	ctx := bidcontext.NewBidContext()
 
 	s.NoError(ProcessContext(ctx))
 	s.Greater(ctx.TickerBid, 0.)

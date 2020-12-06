@@ -7,6 +7,7 @@ import (
 	"github.com/mshogin/randomtrader/pkg/dataprovider"
 	"github.com/mshogin/randomtrader/pkg/exchange"
 	"github.com/mshogin/randomtrader/pkg/logger"
+	"github.com/mshogin/randomtrader/pkg/strategy"
 	"github.com/mshogin/randomtrader/pkg/validator"
 )
 
@@ -17,6 +18,10 @@ func processContext(ctx *bidcontext.BidContext) {
 
 	if err := dataprovider.ProcessContext(ctx); err != nil {
 		ctx.SetError(fmt.Errorf("cannot process dataprovider: %w", err))
+	}
+
+	if err := strategy.ProcessContext(ctx); err != nil {
+		ctx.SetError(fmt.Errorf("cannot process strategy: %w", err))
 	}
 
 	if err := validator.ProcessContext(ctx); err != nil {

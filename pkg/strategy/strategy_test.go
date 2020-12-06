@@ -1,4 +1,4 @@
-package dataprovider
+package strategy
 
 import (
 	"testing"
@@ -9,12 +9,13 @@ import (
 
 func TestProcessContext(t *testing.T) {
 	s := assert.New(t)
-	ctx := &bidcontext.BidContext{TickerBid: 0.}
+	ctx := bidcontext.NewBidContext()
 
-	s.Error(ProcessContext(ctx))
+	s.Empty(ctx.Strategy)
+	s.Empty(ctx.Event)
 
-	ctx = &bidcontext.BidContext{TickerBid: 20000., MinOrderSize: 1.}
 	s.NoError(ProcessContext(ctx))
 
-	s.Equal((1.+1)/20000., ctx.MinAmount)
+	s.NotEmpty(ctx.Strategy)
+	s.NotEmpty(ctx.Event)
 }

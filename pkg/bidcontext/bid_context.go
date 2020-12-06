@@ -21,14 +21,18 @@ type BidContext struct {
 	BalanceQuote float64
 	MinAmount    float64
 
+	AskPrice float64
+	BidPrice float64
+
+	Strategy string
+
 	OrderID string
 }
 
-func NewBidContext(e config.Event) *BidContext {
+func NewBidContext() *BidContext {
 	c := strings.Split(config.GetCurrencyPair(), "-")
 
 	return &BidContext{
-		Event:         e,
 		CurrencyBase:  config.Currency(c[0]),
 		CurrencyQuote: config.Currency(c[1]),
 		Exchange:      config.GetExchange(),

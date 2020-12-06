@@ -23,5 +23,8 @@ func setMinAmount(ctx *bidcontext.BidContext) error {
 	}
 	bid_amount := (ctx.MinOrderSize + 1) / ctx.TickerBid
 	ctx.MinAmount = float64(int(bid_amount*100000000)) / 100000000
+
+	ctx.AskPrice = ctx.MinAmount * ctx.TickerAsk
+	ctx.BidPrice = ctx.MinAmount * ctx.TickerBid
 	return nil
 }

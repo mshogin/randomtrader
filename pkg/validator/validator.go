@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/mshogin/randomtrader/pkg/bidcontext"
@@ -13,6 +14,10 @@ func ProcessContext(ctx *bidcontext.BidContext) error {
 		return nil
 	}
 
+	if err := validateStrategy(ctx); err != nil {
+		return fmt.Errorf("cannot pass the strategy validation: %w", err)
+	}
+
 	if err := validateQuoteBalance(ctx); err != nil {
 		return fmt.Errorf("cannot pass the quote balance validation: %w", err)
 	}
@@ -23,6 +28,18 @@ func ProcessContext(ctx *bidcontext.BidContext) error {
 
 	if err := validateOrderSize(ctx); err != nil {
 		return fmt.Errorf("cannot pass the order_size validation: %w", err)
+	}
+
+	return nil
+}
+
+func validateStrategy(ctx *bidcontext.BidContext) error {
+	if len(ctx.Event) == 0 {
+		return errors.New("event is not defined")
+	}
+
+	if len(ctx.Strategy) == 0 {
+		return errors.New("strategy is not defined")
 	}
 
 	return nil
