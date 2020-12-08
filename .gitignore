@@ -19,3 +19,9 @@ cmd/randomtrader/randomtrader
 
 # python
 pkg/predict/python
+
+# auth
+auth
+
+# tmp
+tmp

@@ -1,3 +1,0 @@
-package/systemd/randomtrader.service lib/systemd/system/
-cmd/randomtrader/randomtrader usr/bin/
-website var/www/randomtrader

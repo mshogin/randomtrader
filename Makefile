@@ -45,6 +45,7 @@ dep: ## Get the dependencies
 
 build: dep ## Build the binary file
 	go build -tags=prod -o cmd/randomtrader/randomtrader cmd/randomtrader/main.go
+	go build -tags=prod -o cmd/datacollector/randomtrader-datacollector cmd/datacollector/main.go
 
 clean: ## Remove previous build
 	rm -f cmd/randomtrader/randomtrader

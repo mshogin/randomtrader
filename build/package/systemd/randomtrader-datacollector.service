@@ -1,0 +1,27 @@
+[Unit]
+Description=RandomTrader::DataCollector
+After=network.target
+Documentation=https://github.com/mshogin/randomtrader
+
+[Service]
+User=randomtrader
+Group=randomtrader
+StandardOutput=journal
+StandardError=journal
+Nice=-5
+Restart=on-failure
+RestartSec=2
+ExecStart=/usr/bin/randomtrader-datacollector
+ExecReload=/bin/kill -HUP $MAINPID
+LimitNOFILE=1000000
+LimitCORE=infinity
+Environment="GOGC=100"
+Environment="GOTRACEBACK=crash"
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+UMask=0002
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
