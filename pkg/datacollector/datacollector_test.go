@@ -23,11 +23,11 @@ func TestOrderBookCollector(t *testing.T) {
 	logFilename := "orderbook1s.log"
 	oldConfig := config.SwapConfig(config.Configuration{
 		LogsRoot: tmpDir,
-		DataCollector: config.DataCollectorConfiguration{
-			OrderBook: []config.DataCollectorOrderBook{
+		DataCollector: config.DataCollector{
+			OrderBook: []config.OrderBookLog{
 				{
-					Filename: logFilename,
-					Interval: 1,
+					Filename:     logFilename,
+					DumpInterval: 1,
 				},
 			},
 		},
@@ -38,7 +38,8 @@ func TestOrderBookCollector(t *testing.T) {
 
 	exchange.SetupTestGRPCClient()
 
-	cancelDataCollector := Run()
+	cancelDataCollector, err := Start()
+	s.NoError(err)
 	defer cancelDataCollector()
 	time.Sleep(2 * time.Second) // give collector the time to collect at least once
 	cancelDataCollector()

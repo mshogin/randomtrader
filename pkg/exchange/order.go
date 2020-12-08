@@ -49,6 +49,8 @@ type (
 		Amount float64
 		Price  float64
 	}
+
+	// OrderBook ...
 	OrderBook struct {
 		Asks []orderBookItem
 		Bids []orderBookItem

@@ -29,11 +29,16 @@ func (s *ConfigTestSuite) TestConfigFile() {
         "OrderSize": 30,
         "Exchange": "kraken",
         "MinimumOrderSize": 10,
+        "LogsRoot": "/tmp",
+        "ConfigsRoot": "/etc",
+        "GCEBucket": "randomtrader-datacollector",
+        "ServiceKeyFilename": "gce-bucket-service-key.json",
         "DataCollector": {
             "OrderBook": [
                 {
-                    "filename": "orderbook10min.log",
-                    "interval": 600
+                    "Filename": "orderbook10min.log",
+                    "DumpInterval": 600,
+                    "RotateInterval": 20
                 }
             ]
         }
@@ -54,9 +59,11 @@ func (s *ConfigTestSuite) TestConfigFile() {
 
 	dc := GetDataCollector()
 	s.NotNil(dc)
-	s.Equal(600, dc.OrderBook[0].Interval)
+	s.Equal(600, dc.OrderBook[0].DumpInterval)
 	s.Equal("orderbook10min.log", dc.OrderBook[0].Filename)
-	s.Equal(path.Join(defatulLogsRoot, "orderbook10min.log"), dc.OrderBook[0].GetFilepath())
+	s.Equal(path.Join("/tmp", "orderbook10min.log"), dc.OrderBook[0].GetFilepath())
+	s.Equal(path.Join("/etc", "gce-bucket-service-key.json"), GetGCEServiceKeyFilepath())
+	s.Equal(20*time.Second, dc.OrderBook[0].GetRotateInterval())
 }
 
 func (s *ConfigTestSuite) TestDefaultDataCollector() {

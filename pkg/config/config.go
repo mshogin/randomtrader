@@ -6,7 +6,6 @@ import (
 	"os"
 	"path"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -16,7 +15,8 @@ const (
 	defaultOrderSize          = 27.
 	defaultExchange           = "bitstamp"
 	defaultMinimumOrderSize   = 25.
-	defatulLogsRoot           = "/var/log/randomtrader"
+	defaultLogsRoot           = "/var/log/randomtrader"
+	defaultConfigsRoot        = "/etc/randomtrader"
 	// BuyEvent ...
 	BuyEvent = "BUY"
 	// SellEvent ...
@@ -34,9 +34,8 @@ func (m Event) String() string {
 // EnabledEvents ...
 var EnabledEvents = []Event{BuyEvent, SellEvent}
 
-var defaultConfigFilePath = "/etc/randomtrader/config.json"
+var defaultConfigsFilename = "/etc/randomtrader/config.json"
 var config = Configuration{}
-var configSync sync.Mutex
 
 // Configuration ...
 type Configuration struct {
@@ -45,21 +44,28 @@ type Configuration struct {
 
 	EventRaiseInterval int
 	LogsRoot           string
+	ConfigsRoot        string
 	Exchange           string
 	CurrencyPair       string
 	OrderSize          float64
 	MinimumOrderSize   float64
 
-	DataCollector DataCollectorConfiguration
+	DataCollector DataCollector
+
+	GCEBucket          string
+	ServiceKeyFilename string
 }
 
-type DataCollectorConfiguration struct {
-	OrderBook []DataCollectorOrderBook
+// OrderBookLog ...
+type OrderBookLog struct {
+	Filename       string
+	DumpInterval   int
+	RotateInterval int
 }
 
-type DataCollectorOrderBook struct {
-	Filename string
-	Interval int
+// DataCollector ...
+type DataCollector struct {
+	OrderBook []OrderBookLog
 }
 
 // Init ...
@@ -67,7 +73,7 @@ func Init(configPath string) error {
 	setDefaults()
 
 	if len(configPath) == 0 {
-		configPath = defaultConfigFilePath
+		configPath = path.Join(GetConfigsRoot(), defaultConfigsFilename)
 	}
 
 	file, err := os.Open(configPath)
@@ -87,10 +93,8 @@ func Init(configPath string) error {
 	return nil
 }
 
-// SetConfig ...
+// SwapConfig ...
 func SwapConfig(c Configuration) Configuration {
-	configSync.Lock()
-	defer configSync.Unlock()
 	oldConfig := config
 	config = c
 	return oldConfig
@@ -98,22 +102,16 @@ func SwapConfig(c Configuration) Configuration {
 
 // GetEventsRaiseInterval ...
 func GetEventsRaiseInterval() time.Duration {
-	configSync.Lock()
-	defer configSync.Unlock()
 	return time.Duration(config.EventRaiseInterval) * time.Second
 }
 
 // IsDebugEnabled ...
 func IsDebugEnabled() bool {
-	configSync.Lock()
-	defer configSync.Unlock()
 	return config.EnableDebug
 }
 
 // GetCurrencyPair ...
 func GetCurrencyPair() string {
-	configSync.Lock()
-	defer configSync.Unlock()
 	if len(config.CurrencyPair) == 0 {
 		return defaultCurrencyPair
 	}
@@ -134,45 +132,56 @@ func GetCurrencyQuote() Currency {
 
 // GetOrderSize ...
 func GetOrderSize() float64 {
-	configSync.Lock()
-	defer configSync.Unlock()
 	return config.OrderSize
 }
 
 // GetExchange ...
 func GetExchange() string {
-	configSync.Lock()
-	defer configSync.Unlock()
 	return config.Exchange
 }
 
 // GetLogsRoot ...
 func GetLogsRoot() string {
-	configSync.Lock()
-	defer configSync.Unlock()
 	return config.LogsRoot
 }
 
+// GetConfigsRoot ...
+func GetConfigsRoot() string {
+	return config.ConfigsRoot
+}
+
+// GetGCEServiceKeyFilepath ...
+func GetGCEServiceKeyFilepath() string {
+	return path.Join(GetConfigsRoot(), config.ServiceKeyFilename)
+}
+
+// GetGCEBucket ...
+func GetGCEBucket() string {
+	return config.GCEBucket
+}
+
 func setDefaults() {
-	configSync.Lock()
-	defer configSync.Unlock()
 	config.EventRaiseInterval = defaultEventRaiseInterval
 	config.EnableDebug = false
 	config.CurrencyPair = defaultCurrencyPair
 	config.OrderSize = defaultOrderSize
 	config.Exchange = defaultExchange
 	config.MinimumOrderSize = defaultMinimumOrderSize
-	config.LogsRoot = defatulLogsRoot
+	config.LogsRoot = defaultLogsRoot
+	config.ConfigsRoot = defaultConfigsRoot
 }
 
 // GetDataCollector ...
-func GetDataCollector() DataCollectorConfiguration {
-	configSync.Lock()
-	defer configSync.Unlock()
+func GetDataCollector() DataCollector {
 	return config.DataCollector
 }
 
 // GetFilepath ...
-func (m DataCollectorOrderBook) GetFilepath() string {
+func (m OrderBookLog) GetFilepath() string {
 	return path.Join(GetLogsRoot(), m.Filename)
+}
+
+// GetRotateInterval ...
+func (m OrderBookLog) GetRotateInterval() time.Duration {
+	return time.Duration(m.RotateInterval) * time.Second
 }
