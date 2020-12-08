@@ -3,5 +3,18 @@
     "CurrencyPair": "BTC-USD",
     "OrderSize": 27,
     "Exchange": "bitstamp",
-    "MinimumOrderSize": 25
+    "MinimumOrderSize": 25,
+    "LogsRoot": "/home/mshogin/randomtrader/tmp",
+    "DataCollector": {
+        "OrderBook": [
+            {
+                "Filename": "orderbook5s.log",
+                "Interval": 5
+            },
+            {
+                "Filename": "orderbook1s.log",
+                "Interval": 1
+            }
+        ]
+    }
 }

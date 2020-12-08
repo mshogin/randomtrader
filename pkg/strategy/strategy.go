@@ -12,7 +12,7 @@ func ProcessContext(ctx *bidcontext.BidContext) error {
 	}
 
 	if len(ctx.Strategy) == 0 {
-		random.ProcessContext(ctx)
+		return random.ProcessContext(ctx)
 	}
 
 	return nil

@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -14,11 +16,14 @@ const (
 	defaultOrderSize          = 27.
 	defaultExchange           = "bitstamp"
 	defaultMinimumOrderSize   = 25.
-
-	BuyEvent  = "BUY"
+	defatulLogsRoot           = "/var/log/randomtrader"
+	// BuyEvent ...
+	BuyEvent = "BUY"
+	// SellEvent ...
 	SellEvent = "SELL"
 )
 
+// Event ...
 type Event string
 
 // String ...
@@ -26,25 +31,40 @@ func (m Event) String() string {
 	return string(m)
 }
 
+// EnabledEvents ...
 var EnabledEvents = []Event{BuyEvent, SellEvent}
 
+var defaultConfigFilePath = "/etc/randomtrader/config.json"
+var config = Configuration{}
+var configSync sync.Mutex
+
+// Configuration ...
 type Configuration struct {
 	EnableDebug    bool
 	TestBrokerMode bool
 
 	EventRaiseInterval int
+	LogsRoot           string
+	Exchange           string
+	CurrencyPair       string
+	OrderSize          float64
+	MinimumOrderSize   float64
 
-	Exchange         string
-	CurrencyPair     string
-	OrderSize        float64
-	MinimumOrderSize float64
+	DataCollector DataCollectorConfiguration
 }
 
-var defaultConfigFilePath = "/etc/randomtrader/config.json"
-var config = Configuration{}
+type DataCollectorConfiguration struct {
+	OrderBook []DataCollectorOrderBook
+}
 
+type DataCollectorOrderBook struct {
+	Filename string
+	Interval int
+}
+
+// Init ...
 func Init(configPath string) error {
-	SetDefaults()
+	setDefaults()
 
 	if len(configPath) == 0 {
 		configPath = defaultConfigFilePath
@@ -57,55 +77,102 @@ func Init(configPath string) error {
 	defer file.Close()
 
 	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&config); err != nil {
+	var c Configuration
+	if err := decoder.Decode(&c); err != nil {
 		return fmt.Errorf("can't parse configuration file %q: %s", configPath, err)
 	}
+
+	SwapConfig(c)
 
 	return nil
 }
 
+// SetConfig ...
+func SwapConfig(c Configuration) Configuration {
+	configSync.Lock()
+	defer configSync.Unlock()
+	oldConfig := config
+	config = c
+	return oldConfig
+}
+
+// GetEventsRaiseInterval ...
 func GetEventsRaiseInterval() time.Duration {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return time.Duration(config.EventRaiseInterval) * time.Second
 }
 
+// IsDebugEnabled ...
 func IsDebugEnabled() bool {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return config.EnableDebug
 }
 
+// GetCurrencyPair ...
 func GetCurrencyPair() string {
+	configSync.Lock()
+	defer configSync.Unlock()
 	if len(config.CurrencyPair) == 0 {
 		return defaultCurrencyPair
 	}
 	return config.CurrencyPair
 }
 
+// GetCurrencyBase ...
+func GetCurrencyBase() Currency {
+	c := strings.Split(GetCurrencyPair(), "-")
+	return Currency(c[0])
+}
+
+// GetCurrencyQuote ...
+func GetCurrencyQuote() Currency {
+	c := strings.Split(GetCurrencyPair(), "-")
+	return Currency(c[1])
+}
+
+// GetOrderSize ...
 func GetOrderSize() float64 {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return config.OrderSize
 }
 
-func GetMinimumOrderSize() float64 {
-	return config.MinimumOrderSize
-}
-
-func GetCurrencyBase() Currency {
-	p := strings.Split(config.CurrencyPair, "-")
-	return Currency(p[0])
-}
-
-func GetCurrencyQuote() Currency {
-	p := strings.Split(config.CurrencyPair, "-")
-	return Currency(p[1])
-}
-
+// GetExchange ...
 func GetExchange() string {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return config.Exchange
 }
 
-func SetDefaults() {
+// GetLogsRoot ...
+func GetLogsRoot() string {
+	configSync.Lock()
+	defer configSync.Unlock()
+	return config.LogsRoot
+}
+
+func setDefaults() {
+	configSync.Lock()
+	defer configSync.Unlock()
 	config.EventRaiseInterval = defaultEventRaiseInterval
 	config.EnableDebug = false
 	config.CurrencyPair = defaultCurrencyPair
 	config.OrderSize = defaultOrderSize
 	config.Exchange = defaultExchange
 	config.MinimumOrderSize = defaultMinimumOrderSize
+	config.LogsRoot = defatulLogsRoot
+}
+
+// GetDataCollector ...
+func GetDataCollector() DataCollectorConfiguration {
+	configSync.Lock()
+	defer configSync.Unlock()
+	return config.DataCollector
+}
+
+// GetFilepath ...
+func (m DataCollectorOrderBook) GetFilepath() string {
+	return path.Join(GetLogsRoot(), m.Filename)
 }

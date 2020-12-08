@@ -1,11 +1,10 @@
 package bidcontext
 
 import (
-	"strings"
-
 	"github.com/mshogin/randomtrader/pkg/config"
 )
 
+// BidContext ...
 type BidContext struct {
 	Exchange      string
 	MinOrderSize  float64
@@ -29,12 +28,11 @@ type BidContext struct {
 	OrderID string
 }
 
+// NewBidContext ...
 func NewBidContext() *BidContext {
-	c := strings.Split(config.GetCurrencyPair(), "-")
-
 	return &BidContext{
-		CurrencyBase:  config.Currency(c[0]),
-		CurrencyQuote: config.Currency(c[1]),
+		CurrencyBase:  config.GetCurrencyBase(),
+		CurrencyQuote: config.GetCurrencyQuote(),
 		Exchange:      config.GetExchange(),
 		MinOrderSize:  config.GetOrderSize(),
 	}

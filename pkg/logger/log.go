@@ -11,16 +11,19 @@ import (
 
 var debugDisabled = true
 
+// EnableDebug ...
 func EnableDebug() func() {
 	debugDisabled = false
 	return DisableDebug
 }
 
+// DisableDebug ...
 func DisableDebug() {
 	debugDisabled = true
 }
 
-func Debug(format string, args ...interface{}) {
+// Debugf ...
+func Debugf(format string, args ...interface{}) {
 	if debugDisabled {
 		return
 	}
@@ -36,21 +39,24 @@ func Debug(format string, args ...interface{}) {
 	fmt.Printf("DEBUG: "+s+" "+format+"\n", args...) // output for debug
 }
 
-func Error(format string, args ...interface{}) {
+// Errorf ...
+func Errorf(format string, args ...interface{}) {
 	fmt.Printf("ERROR: "+format+"\n", args...) // output for debug
 }
 
-func Info(format string, args ...interface{}) {
+// Infof ...
+func Infof(format string, args ...interface{}) {
 	fmt.Printf("INFO: "+format+"\n", args...) // output for debug
 }
 
+// ProcessContext ...
 func ProcessContext(ctx *bidcontext.BidContext) error {
 	buf, err := json.MarshalIndent(ctx, "", "    ")
 	if err != nil {
 		err = fmt.Errorf("cannot dump context: %w", err)
-		Error(err.Error())
+		Errorf(err.Error())
 		return err
 	}
-	Info(string(buf))
+	Infof(string(buf))
 	return nil
 }

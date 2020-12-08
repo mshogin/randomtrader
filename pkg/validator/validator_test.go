@@ -8,12 +8,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const testStrategyName = "some strategy"
+
 func TestProcessContextBuyEvent(t *testing.T) {
 	s := assert.New(t)
 
 	ctx := bidcontext.NewBidContext()
 	ctx.Event = config.BuyEvent
-	ctx.Strategy = "some strategy"
+	ctx.Strategy = testStrategyName
 	ctx.MinAmount = 0.01
 	ctx.TickerBid = 10
 	ctx.BalanceQuote = 0.05
@@ -24,7 +26,7 @@ func TestProcessContextBuyEvent(t *testing.T) {
 
 	ctx = bidcontext.NewBidContext()
 	ctx.Event = config.BuyEvent
-	ctx.Strategy = "some strategy"
+	ctx.Strategy = testStrategyName
 	ctx.MinAmount = 0.01
 	ctx.TickerBid = 10
 	ctx.BalanceQuote = 15
@@ -35,7 +37,7 @@ func TestProcessContextBuyEvent(t *testing.T) {
 
 	ctx = bidcontext.NewBidContext()
 	ctx.Event = config.BuyEvent
-	ctx.Strategy = "some strategy"
+	ctx.Strategy = testStrategyName
 	ctx.MinAmount = 0.01
 	ctx.TickerBid = 10
 	ctx.BalanceQuote = 15
@@ -49,7 +51,7 @@ func TestProcessContextSellEvent(t *testing.T) {
 
 	ctx := bidcontext.NewBidContext()
 	ctx.Event = config.SellEvent
-	ctx.Strategy = "some strategy"
+	ctx.Strategy = testStrategyName
 	ctx.MinAmount = 0.05
 	ctx.BalanceBase = 0.01
 
@@ -59,7 +61,7 @@ func TestProcessContextSellEvent(t *testing.T) {
 
 	ctx = bidcontext.NewBidContext()
 	ctx.Event = config.SellEvent
-	ctx.Strategy = "some strategy"
+	ctx.Strategy = testStrategyName
 	ctx.MinAmount = 0.05
 	ctx.BalanceBase = 0.1
 
@@ -69,7 +71,7 @@ func TestProcessContextSellEvent(t *testing.T) {
 
 	ctx = bidcontext.NewBidContext()
 	ctx.Event = config.SellEvent
-	ctx.Strategy = "some strategy"
+	ctx.Strategy = testStrategyName
 	ctx.MinAmount = 0.05
 	ctx.BalanceBase = 0.1
 	ctx.TickerBid = 10

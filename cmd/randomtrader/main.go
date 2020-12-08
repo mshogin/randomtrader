@@ -6,12 +6,12 @@ import (
 	"os/signal"
 
 	"github.com/mshogin/randomtrader/pkg/config"
+	"github.com/mshogin/randomtrader/pkg/datacollector"
 	"github.com/mshogin/randomtrader/pkg/logger"
-	"github.com/mshogin/randomtrader/pkg/trader"
 )
 
 func main() {
-	logger.Info("Starting Random trader")
+	logger.Infof("Starting Random trader")
 
 	configPath := flag.String(
 		"config",
@@ -24,7 +24,7 @@ func main() {
 	flag.Parse()
 
 	if err := config.Init(*configPath); err != nil {
-		logger.Error("can't initialise configuration: %s", err)
+		logger.Errorf("can't initialise configuration: %s", err)
 		os.Exit(1)
 	}
 
@@ -32,15 +32,16 @@ func main() {
 		logger.EnableDebug()
 	}
 
-	trader.Run()
+	// trader.Run()
+	datacollector.Run()
 
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Interrupt, os.Kill)
 
-	logger.Debug("Random trader has been started")
+	logger.Infof("Random trader has been started")
 	<-c
 
-	logger.Debug("Shutting down randomtrader...")
-	trader.Shutdown()
-	logger.Debug("Random trader has been stopped")
+	logger.Infof("Shutting down randomtrader...")
+	// trader.Shutdown()
+	logger.Infof("Random trader has been stopped")
 }

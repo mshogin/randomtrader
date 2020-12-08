@@ -3,6 +3,7 @@ package config
 import (
 	"io/ioutil"
 	"os"
+	"path"
 	"testing"
 	"time"
 
@@ -27,7 +28,15 @@ func (s *ConfigTestSuite) TestConfigFile() {
 	"CurrencyPair": "BTC-USD",
         "OrderSize": 30,
         "Exchange": "kraken",
-        "MinimumOrderSize": 10
+        "MinimumOrderSize": 10,
+        "DataCollector": {
+            "OrderBook": [
+                {
+                    "filename": "orderbook10min.log",
+                    "interval": 600
+                }
+            ]
+        }
 }`)
 	s.NoError(ioutil.WriteFile(f.Name(), content, os.FileMode(644)))
 
@@ -41,8 +50,32 @@ func (s *ConfigTestSuite) TestConfigFile() {
 	s.Equal(time.Duration(1)*time.Second, GetEventsRaiseInterval())
 	s.Equal("BTC-USD", GetCurrencyPair())
 	s.Equal(30., GetOrderSize())
-	s.Equal(BTC, GetCurrencyBase())
-	s.Equal(USD, GetCurrencyQuote())
 	s.Equal("kraken", GetExchange())
-	s.Equal(10., GetMinimumOrderSize())
+
+	dc := GetDataCollector()
+	s.NotNil(dc)
+	s.Equal(600, dc.OrderBook[0].Interval)
+	s.Equal("orderbook10min.log", dc.OrderBook[0].Filename)
+	s.Equal(path.Join(defatulLogsRoot, "orderbook10min.log"), dc.OrderBook[0].GetFilepath())
+}
+
+func (s *ConfigTestSuite) TestDefaultDataCollector() {
+	f, err := ioutil.TempFile("", "")
+	s.NoError(err)
+	s.NoError(f.Close())
+
+	content := []byte(`{
+}`)
+	s.NoError(ioutil.WriteFile(f.Name(), content, os.FileMode(644)))
+
+	configOrig := config
+	defer func() {
+		config = configOrig
+	}()
+
+	s.NoError(Init(f.Name()))
+
+	dc := GetDataCollector()
+	s.NotNil(dc)
+	s.Nil(dc.OrderBook)
 }

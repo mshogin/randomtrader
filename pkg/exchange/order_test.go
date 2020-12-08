@@ -10,11 +10,7 @@ import (
 
 func TestExecuteContext(t *testing.T) {
 	s := assert.New(t)
-	clientOrig := setupClient
-	defer func() {
-		setupClient = clientOrig
-	}()
-	setupClient = setupTestClient
+	SetupTestGRPCClient()
 
 	for _, e := range []config.Event{config.BuyEvent, config.SellEvent} {
 		ctx := bidcontext.NewBidContext()

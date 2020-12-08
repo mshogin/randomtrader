@@ -6,6 +6,8 @@ import (
 	"github.com/mshogin/randomtrader/pkg/bidcontext"
 )
 
+const precision = 100000000
+
 // ProcessContext ...
 func ProcessContext(ctx *bidcontext.BidContext) error {
 	if ctx.HasError() {
@@ -21,8 +23,8 @@ func setMinAmount(ctx *bidcontext.BidContext) error {
 	if ctx.TickerBid <= 0 {
 		return fmt.Errorf("invalid 'TickerBid' value: %v", ctx.TickerBid)
 	}
-	bid_amount := (ctx.MinOrderSize + 1) / ctx.TickerBid
-	ctx.MinAmount = float64(int(bid_amount*100000000)) / 100000000
+	bidAmount := (ctx.MinOrderSize + 1) / ctx.TickerBid
+	ctx.MinAmount = float64(int(bidAmount*precision)) / precision
 
 	ctx.AskPrice = ctx.MinAmount * ctx.TickerAsk
 	ctx.BidPrice = ctx.MinAmount * ctx.TickerBid

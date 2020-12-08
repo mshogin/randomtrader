@@ -7,6 +7,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+var defaultTestValue = 10.
+
 type testClient struct{}
 
 // GetTicker ...
@@ -17,8 +19,8 @@ func (m *testClient) GetTicker(ctx context.Context, in *gctrpc.GetTickerRequest,
 			Base:      "BTC",
 			Quote:     "USD",
 		},
-		Bid: 10.,
-		Ask: 10.,
+		Bid: defaultTestValue,
+		Ask: defaultTestValue,
 	}, nil
 }
 
@@ -31,11 +33,11 @@ func (m *testClient) UpdateAccountInfo(ctx context.Context, in *gctrpc.GetAccoun
 				Currencies: []*gctrpc.AccountCurrencyInfo{
 					{
 						Currency:   "BTC",
-						TotalValue: 10.,
+						TotalValue: defaultTestValue,
 					},
 					{
 						Currency:   "USD",
-						TotalValue: 10.,
+						TotalValue: defaultTestValue,
 					},
 				},
 			},
@@ -51,10 +53,30 @@ func (m *testClient) SubmitOrder(ctx context.Context, in *gctrpc.SubmitOrderRequ
 	}, nil
 }
 
+// GetOrderbook ...
+func (m *testClient) GetOrderbook(ctx context.Context, in *gctrpc.GetOrderbookRequest, opts ...grpc.CallOption) (*gctrpc.OrderbookResponse, error) {
+	return &gctrpc.OrderbookResponse{
+		Asks: []*gctrpc.OrderbookItem{
+			{
+				Price:  12.,
+				Amount: 0.01,
+			},
+		},
+		Bids: []*gctrpc.OrderbookItem{
+			{
+				Price:  12.,
+				Amount: 0.01,
+			},
+		},
+	}, nil
+}
+
 // Close ...
 func (m *testClient) Close() error { return nil }
 
-// setupTestClient ...
-func setupTestClient() (grpcClient, error) {
-	return &testClient{}, nil
+// SetupTestGRPCClient ...
+func SetupTestGRPCClient() {
+	setupClient = func() (grpcClient, error) {
+		return &testClient{}, nil
+	}
 }

@@ -9,12 +9,7 @@ import (
 
 func TestProcessContext(t *testing.T) {
 	s := assert.New(t)
-
-	clientOrig := setupClient
-	defer func() {
-		setupClient = clientOrig
-	}()
-	setupClient = setupTestClient
+	SetupTestGRPCClient()
 
 	ctx := bidcontext.NewBidContext()
 
@@ -23,5 +18,4 @@ func TestProcessContext(t *testing.T) {
 	s.Greater(ctx.TickerAsk, 0.)
 	s.Greater(ctx.BalanceBase, 0.)
 	s.Greater(ctx.BalanceQuote, 0.)
-
 }

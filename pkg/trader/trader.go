@@ -13,6 +13,7 @@ var (
 	startedEventLoop chan bool = make(chan bool)
 )
 
+// Run ...
 func Run() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	go func() {
@@ -35,6 +36,7 @@ func Run() {
 	startedEventLoop <- true
 }
 
+// Shutdown ...
 func Shutdown() {
 	doneEventLoop <- true
 	doneEventLoop <- true

@@ -3,3 +3,6 @@
 adduser --system --group --no-create-home randomtrader
 systemctl daemon-reload
 systemctl restart randomtrader
+
+mkdir -p /var/log/randomtrader
+chown -R randomtrader:randomtrader /var/log/randomtrader

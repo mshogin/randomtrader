@@ -14,6 +14,8 @@ LINTBIN = $(GOPATH)/bin/golangci-lint
 all: build
 
 linter:
+	go get golang.org/x/lint/golint
+	golint ./...
 	GO111MODULE=on go get $(LINTPKG)
 	test -z "$$($(LINTBIN) run --verbose | tee /dev/stderr)"
 
