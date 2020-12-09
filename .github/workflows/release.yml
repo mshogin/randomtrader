@@ -1,0 +1,42 @@
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get install -y fakeroot debhelper dh-systemd
+
+      - name: Checkout Code
+        uses: actions/checkout@v2.3.4
+
+      - name: Build deb package
+        run: dpkg-buildpackage -us -uc -b
+
+      - name: Get tag
+        id: get_tag
+        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_tag.outputs.TAG }}
+          release_name: Release ${{ steps.get_tag.outputs.TAG }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ../randomtrader_${{ steps.get_tag.outputs.TAG }}_amd64.deb
+          asset_name: randomtrader_${{ steps.get_tag.outputs.TAG }}_amd64.deb
