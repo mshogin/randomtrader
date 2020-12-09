@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -34,8 +35,8 @@ func (m Event) String() string {
 // EnabledEvents ...
 var EnabledEvents = []Event{BuyEvent, SellEvent}
 
-var defaultConfigsFilename = "/etc/randomtrader/config.json"
 var config = Configuration{}
+var configSync sync.Mutex
 
 // Configuration ...
 type Configuration struct {
@@ -72,10 +73,6 @@ type DataCollector struct {
 func Init(configPath string) error {
 	setDefaults()
 
-	if len(configPath) == 0 {
-		configPath = path.Join(GetConfigsRoot(), defaultConfigsFilename)
-	}
-
 	file, err := os.Open(configPath)
 	if err != nil {
 		return fmt.Errorf("can't open configuration file %q: %s", configPath, err)
@@ -95,6 +92,8 @@ func Init(configPath string) error {
 
 // SwapConfig ...
 func SwapConfig(c Configuration) Configuration {
+	configSync.Lock()
+	defer configSync.Unlock()
 	oldConfig := config
 	config = c
 	return oldConfig
@@ -102,16 +101,22 @@ func SwapConfig(c Configuration) Configuration {
 
 // GetEventsRaiseInterval ...
 func GetEventsRaiseInterval() time.Duration {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return time.Duration(config.EventRaiseInterval) * time.Second
 }
 
 // IsDebugEnabled ...
 func IsDebugEnabled() bool {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return config.EnableDebug
 }
 
 // GetCurrencyPair ...
 func GetCurrencyPair() string {
+	configSync.Lock()
+	defer configSync.Unlock()
 	if len(config.CurrencyPair) == 0 {
 		return defaultCurrencyPair
 	}
@@ -132,31 +137,39 @@ func GetCurrencyQuote() Currency {
 
 // GetOrderSize ...
 func GetOrderSize() float64 {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return config.OrderSize
 }
 
 // GetExchange ...
 func GetExchange() string {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return config.Exchange
 }
 
-// GetLogsRoot ...
-func GetLogsRoot() string {
+// getLogsRoot ...
+func getLogsRoot() string {
 	return config.LogsRoot
 }
 
-// GetConfigsRoot ...
-func GetConfigsRoot() string {
+// getConfigsRoot ...
+func getConfigsRoot() string {
 	return config.ConfigsRoot
 }
 
 // GetGCEServiceKeyFilepath ...
 func GetGCEServiceKeyFilepath() string {
-	return path.Join(GetConfigsRoot(), config.ServiceKeyFilename)
+	configSync.Lock()
+	defer configSync.Unlock()
+	return path.Join(getConfigsRoot(), config.ServiceKeyFilename)
 }
 
 // GetGCEBucket ...
 func GetGCEBucket() string {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return config.GCEBucket
 }
 
@@ -173,15 +186,21 @@ func setDefaults() {
 
 // GetDataCollector ...
 func GetDataCollector() DataCollector {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return config.DataCollector
 }
 
 // GetFilepath ...
 func (m OrderBookLog) GetFilepath() string {
-	return path.Join(GetLogsRoot(), m.Filename)
+	configSync.Lock()
+	defer configSync.Unlock()
+	return path.Join(getLogsRoot(), m.Filename)
 }
 
 // GetRotateInterval ...
 func (m OrderBookLog) GetRotateInterval() time.Duration {
+	configSync.Lock()
+	defer configSync.Unlock()
 	return time.Duration(m.RotateInterval) * time.Second
 }

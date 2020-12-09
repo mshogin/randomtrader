@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/mshogin/randomtrader/pkg/config"
@@ -13,9 +12,7 @@ import (
 )
 
 const (
-	orderBookBucketPrefix = "order-book"
-	layoutISO             = "2006-01-02"
-	rotationSuffix        = ".%Y%m%d%H%M%S"
+	rotationSuffix = ".%Y%m%d%H%M%S"
 )
 
 type logFile struct {
@@ -35,8 +32,7 @@ func createLogFile(conf config.OrderBookLog) (*logFile, error) {
 
 				prevFilePath := e.(*rotatelogs.FileRotatedEvent).PreviousFile()
 				if len(prevFilePath) != 0 {
-					prefix := fmt.Sprintf("%s/%s/", orderBookBucketPrefix, time.Now().Format(layoutISO))
-					if err := storage.SaveObject(prefix, prevFilePath); err != nil {
+					if err := storage.SaveOrderBookLog(prevFilePath); err != nil {
 						logger.Errorf("cannot send %q to gce bucket: %w", prevFilePath, err)
 					}
 

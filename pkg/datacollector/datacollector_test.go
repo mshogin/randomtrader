@@ -26,8 +26,9 @@ func TestOrderBookCollector(t *testing.T) {
 		DataCollector: config.DataCollector{
 			OrderBook: []config.OrderBookLog{
 				{
-					Filename:     logFilename,
-					DumpInterval: 1,
+					Filename:       logFilename,
+					DumpInterval:   1,
+					RotateInterval: 1,
 				},
 			},
 		},
@@ -41,7 +42,8 @@ func TestOrderBookCollector(t *testing.T) {
 	cancelDataCollector, err := Start()
 	s.NoError(err)
 	defer cancelDataCollector()
-	time.Sleep(2 * time.Second) // give collector the time to collect at least once
+
+	time.Sleep(3 * time.Second) // give collector the time to collect at least once
 	cancelDataCollector()
 
 	fpath := path.Join(tmpDir, logFilename)

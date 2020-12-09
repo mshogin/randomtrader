@@ -24,7 +24,7 @@ check: linter test
 test: ## Run unittests
 	go test -coverprofile=coverage.txt -covermode=atomic  ./...
 
-race: dep ## Run data race detector
+testrace: dep ## Run data race detector
 	go test -race -coverprofile=coverage.txt -covermode=atomic  ./...
 
 msan: dep ## Run memory sanitize

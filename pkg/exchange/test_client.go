@@ -7,7 +7,11 @@ import (
 	"google.golang.org/grpc"
 )
 
-var defaultTestValue = 10.
+const (
+	testExchangeName = "test-exchange"
+	testPriceValue   = 12.
+	testAmountValue  = 0.001
+)
 
 type testClient struct{}
 
@@ -19,25 +23,25 @@ func (m *testClient) GetTicker(ctx context.Context, in *gctrpc.GetTickerRequest,
 			Base:      "BTC",
 			Quote:     "USD",
 		},
-		Bid: defaultTestValue,
-		Ask: defaultTestValue,
+		Bid: testPriceValue,
+		Ask: testPriceValue,
 	}, nil
 }
 
 // UpdateAccountInfo ...
 func (m *testClient) UpdateAccountInfo(ctx context.Context, in *gctrpc.GetAccountInfoRequest, opts ...grpc.CallOption) (*gctrpc.GetAccountInfoResponse, error) {
 	return &gctrpc.GetAccountInfoResponse{
-		Exchange: "test-exchange",
+		Exchange: testExchangeName,
 		Accounts: []*gctrpc.Account{
 			{
 				Currencies: []*gctrpc.AccountCurrencyInfo{
 					{
 						Currency:   "BTC",
-						TotalValue: defaultTestValue,
+						TotalValue: testPriceValue,
 					},
 					{
 						Currency:   "USD",
-						TotalValue: defaultTestValue,
+						TotalValue: testPriceValue,
 					},
 				},
 			},
@@ -58,14 +62,14 @@ func (m *testClient) GetOrderbook(ctx context.Context, in *gctrpc.GetOrderbookRe
 	return &gctrpc.OrderbookResponse{
 		Asks: []*gctrpc.OrderbookItem{
 			{
-				Price:  12.,
-				Amount: 0.01,
+				Price:  testPriceValue,
+				Amount: testAmountValue,
 			},
 		},
 		Bids: []*gctrpc.OrderbookItem{
 			{
-				Price:  12.,
-				Amount: 0.01,
+				Price:  testPriceValue,
+				Amount: testAmountValue,
 			},
 		},
 	}, nil

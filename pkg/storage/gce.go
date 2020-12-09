@@ -6,31 +6,34 @@ import (
 	"io"
 	"os"
 	"path"
-	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/mshogin/randomtrader/pkg/config"
 	"google.golang.org/api/option"
 )
 
-const saveObjectTimeout = time.Second * 50
+type gceClientImpl struct {
+	cli *storage.Client
+}
 
-var client *storage.Client
+var gceClient *gceClientImpl
 
-// Init ...
-func Init() error {
-	var err error
-	ctx := context.Background()
-	client, err = storage.NewClient(ctx, option.WithCredentialsFile(config.GetGCEServiceKeyFilepath()))
-	if err != nil {
-		return fmt.Errorf("cannot create gce storage client: %w", err)
+// GetGCEClient ...
+var GetGCEClient = func() (Storage, error) {
+	if gceClient != nil {
+		return gceClient, nil
 	}
-
-	return nil
+	ctx := context.Background()
+	cli, err := storage.NewClient(ctx, option.WithCredentialsFile(config.GetGCEServiceKeyFilepath()))
+	if err != nil {
+		return nil, fmt.Errorf("cannot create gce storage client: %w", err)
+	}
+	gceClient = &gceClientImpl{cli: cli}
+	return gceClient, nil
 }
 
 // SaveObject ...
-func SaveObject(prefix, fpath string) error {
+func (m *gceClientImpl) SaveObject(prefix, fpath string) error {
 	f, err := os.Open(fpath)
 	if err != nil {
 		return fmt.Errorf("cannot open file %q: %w", fpath, err)
@@ -41,7 +44,7 @@ func SaveObject(prefix, fpath string) error {
 	defer cancel()
 
 	_, objectName := path.Split(fpath)
-	wc := client.Bucket(config.GetGCEBucket()).Object(prefix + objectName).NewWriter(ctx)
+	wc := m.cli.Bucket(config.GetGCEBucket()).Object(prefix + objectName).NewWriter(ctx)
 
 	if _, err = io.Copy(wc, f); err != nil {
 		return fmt.Errorf("cannot copy file to the bucket: %w", err)

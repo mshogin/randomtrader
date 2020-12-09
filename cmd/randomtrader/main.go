@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"github.com/mshogin/randomtrader/pkg/config"
 	"github.com/mshogin/randomtrader/pkg/logger"
@@ -35,7 +36,7 @@ func main() {
 	trader.Run()
 
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
 	logger.Infof("Random trader has been started")
 	<-c

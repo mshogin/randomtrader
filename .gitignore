@@ -20,8 +20,8 @@ cmd/randomtrader/randomtrader
 # python
 pkg/predict/python
 
-# auth
-auth
+# deployment configuration
+dcf
 
 # tmp
 tmp
