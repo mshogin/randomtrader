@@ -12,9 +12,6 @@ clean:
 	make clean
 	dh_clean
 
-build:  clean
-	make 
-
 binary:
 	dh $@ --with-systemd
 	dh_prep

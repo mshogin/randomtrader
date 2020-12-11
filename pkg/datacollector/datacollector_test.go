@@ -11,6 +11,7 @@ import (
 
 	"github.com/mshogin/randomtrader/pkg/config"
 	"github.com/mshogin/randomtrader/pkg/exchange"
+	"github.com/mshogin/randomtrader/pkg/storage"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -38,6 +39,10 @@ func TestOrderBookCollector(t *testing.T) {
 	}()
 
 	exchange.SetupTestGRPCClient()
+
+	GetGCEClientOrig := storage.GetGCEClient
+	defer func() { storage.GetGCEClient = GetGCEClientOrig }()
+	storage.GetGCEClient = storage.GetGCETestClient
 
 	cancelDataCollector, err := Start()
 	s.NoError(err)

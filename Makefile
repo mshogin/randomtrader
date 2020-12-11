@@ -43,7 +43,7 @@ dep: ## Get the dependencies
 	go get -u golang.org/x/lint/golint
 	go get -u golang.org/x/lint/golint
 
-build: dep ## Build the binary file
+build: ## Build the binary file
 	go build -tags=prod -o cmd/randomtrader/randomtrader cmd/randomtrader/main.go
 	go build -tags=prod -o cmd/datacollector/randomtrader-datacollector cmd/datacollector/main.go
 

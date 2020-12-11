@@ -48,9 +48,10 @@ func runOrderBookDumper(ctx context.Context, conf config.OrderBookLog) {
 			ob, err := exchange.GetOrderBook()
 			if err != nil {
 				logger.Errorf("cannot get order book: %w", err)
-			}
-			if err := log.Write(ob); err != nil {
-				logger.Errorf("cannot write order book: %w", err)
+			} else {
+				if err := log.Write(ob); err != nil {
+					logger.Errorf("cannot write order book: %w", err)
+				}
 			}
 		}
 	}
