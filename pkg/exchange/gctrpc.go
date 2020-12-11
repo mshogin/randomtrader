@@ -13,7 +13,7 @@ var (
 	rpcHost     = "localhost:9052"
 	rpcUsername = "admin"
 	rpcPassword = "test"
-	certPath    = "/home/mshogin/.gocryptotrader/tls/cert.pem"
+	certPath    = "/home/gocryptotrader/.gocryptotrader/tls/cert.pem"
 )
 
 type grpcClient interface {
