@@ -20,7 +20,7 @@ Environment="GOTRACEBACK=crash"
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 UMask=0002
 ProtectSystem=full
-ProtectHome=true
+ProtectHome=false
 NoNewPrivileges=true
 
 [Install]
