@@ -86,7 +86,7 @@ func GetOrderBook() (*OrderBook, error) {
 		ob.Asks = append(ob.Asks,
 			orderBookItem{Amount: ask.Amount, Price: ask.Price})
 	}
-	for _, bid := range result.GetAsks() {
+	for _, bid := range result.GetBids() {
 		ob.Bids = append(ob.Bids,
 			orderBookItem{Amount: bid.Amount, Price: bid.Price})
 	}

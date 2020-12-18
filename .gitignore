@@ -17,8 +17,8 @@ debian/randomtrader
 # Randomtrader binary
 cmd/randomtrader/randomtrader
 
-# python
-pkg/predict/python
+# predict
+predict
 
 # deployment configuration
 dcf
