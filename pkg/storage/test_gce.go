@@ -3,8 +3,8 @@ package storage
 type testGCEClient struct{}
 
 // GetGCETestClient ...
-var GetGCETestClient = func() (Storage, error) {
-	return &testGCEClient{}, nil
+func GetGCETestClient() Storage {
+	return &testGCEClient{}
 }
 
 // SaveObject ...

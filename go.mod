@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	cloud.google.com/go/storage v1.10.0
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible

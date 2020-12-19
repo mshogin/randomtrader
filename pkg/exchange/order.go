@@ -3,9 +3,11 @@ package exchange
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/mshogin/randomtrader/pkg/bidcontext"
 	"github.com/mshogin/randomtrader/pkg/config"
+	"github.com/mshogin/randomtrader/pkg/utils"
 	"github.com/thrasher-corp/gocryptotrader/gctrpc"
 )
 
@@ -52,8 +54,9 @@ type (
 
 	// OrderBook ...
 	OrderBook struct {
-		Asks []orderBookItem
-		Bids []orderBookItem
+		Asks     []orderBookItem
+		Bids     []orderBookItem
+		DateTime time.Time
 	}
 )
 
@@ -81,7 +84,9 @@ func GetOrderBook() (*OrderBook, error) {
 		return nil, fmt.Errorf("cannot place order: %s", err)
 	}
 
-	ob := OrderBook{}
+	ob := OrderBook{
+		DateTime: utils.GetCurrentTime(),
+	}
 	for _, ask := range result.GetAsks() {
 		ob.Asks = append(ob.Asks,
 			orderBookItem{Amount: ask.Amount, Price: ask.Price})

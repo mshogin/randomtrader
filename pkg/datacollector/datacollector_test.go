@@ -40,16 +40,14 @@ func TestOrderBookCollector(t *testing.T) {
 
 	exchange.SetupTestGRPCClient()
 
-	GetGCEClientOrig := storage.GetGCEClient
-	defer func() { storage.GetGCEClient = GetGCEClientOrig }()
-	storage.GetGCEClient = storage.GetGCETestClient
+	GetGCEClientOrig := storage.SwapGCEClient(storage.GetGCETestClient())
+	defer storage.SwapGCEClient(GetGCEClientOrig)
 
-	cancelDataCollector, err := Start()
-	s.NoError(err)
-	defer cancelDataCollector()
+	s.NoError(Start())
+	defer Stop()
 
 	time.Sleep(3 * time.Second) // give collector the time to collect at least once
-	cancelDataCollector()
+	Stop()
 
 	fpath := path.Join(tmpDir, logFilename)
 	file, err := os.Open(fpath)
@@ -66,4 +64,35 @@ func TestOrderBookCollector(t *testing.T) {
 	}
 	s.NoError(sc.Err())
 	s.Greater(lineNo, 0)
+}
+
+func TestReload(t *testing.T) {
+	s := assert.New(t)
+	startOrig := Start
+	stopOrig := Stop
+	defer func() {
+		Start = startOrig
+		Stop = stopOrig
+	}()
+
+	startCount, stopCount := 0, 0
+	Start = func() error {
+		startCount++
+		return nil
+	}
+	Stop = func() {
+		stopCount++
+	}
+
+	f, err := ioutil.TempFile("", "")
+	s.NoError(err)
+	s.NoError(f.Close())
+
+	s.NoError(ioutil.WriteFile(f.Name(), []byte("{}"), os.FileMode(644)))
+
+	Reload(f.Name())
+	defer Stop()
+
+	s.Equal(1, startCount)
+	s.Equal(1, stopCount)
 }

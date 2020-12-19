@@ -36,17 +36,22 @@ func Debugf(format string, args ...interface{}) {
 	} else {
 		s = ""
 	}
-	fmt.Printf("DEBUG: "+s+" "+format+"\n", args...) // output for debug
+	fmt.Printf("DEBUG: "+s+" "+format+"\n", args...)
 }
 
 // Errorf ...
 func Errorf(format string, args ...interface{}) {
-	fmt.Printf("ERROR: "+format+"\n", args...) // output for debug
+	fmt.Printf("ERROR: "+format+"\n", args...)
+}
+
+// Fatalf ...
+func Fatalf(format string, args ...interface{}) {
+	panic(fmt.Errorf("FATAL: "+format+"\n", args...))
 }
 
 // Infof ...
 func Infof(format string, args ...interface{}) {
-	fmt.Printf("INFO: "+format+"\n", args...) // output for debug
+	fmt.Printf("INFO: "+format+"\n", args...)
 }
 
 // ProcessContext ...

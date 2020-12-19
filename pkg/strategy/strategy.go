@@ -11,6 +11,10 @@ func ProcessContext(ctx *bidcontext.BidContext) error {
 		return nil
 	}
 
+	// if err := lisa.ProcessContext(ctx); err != nil {
+	// 	logger.Errorf("strategy lisa finished with error: %w", err)
+	// }
+
 	if len(ctx.Strategy) == 0 {
 		return random.ProcessContext(ctx)
 	}

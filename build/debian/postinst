@@ -2,8 +2,8 @@
 
 adduser --system --group --no-create-home randomtrader
 systemctl daemon-reload
-systemctl restart randomtrader
-systemctl restart randomtrader-datacollector
+# systemctl restart randomtrader
+# systemctl restart randomtrader-datacollector
 
 mkdir -p /var/log/randomtrader
 chown -R randomtrader:randomtrader /var/log/randomtrader

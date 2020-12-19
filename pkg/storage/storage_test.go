@@ -9,9 +9,8 @@ import (
 func TestSaveOrderBookLog(t *testing.T) {
 	s := assert.New(t)
 
-	GetGCEClientOrig := GetGCEClient
-	defer func() { GetGCEClient = GetGCEClientOrig }()
-	GetGCEClient = GetGCETestClient
+	gceClientOrig := SwapGCEClient(GetGCETestClient())
+	defer func() { SwapGCEClient(gceClientOrig) }()
 
 	s.NoError(SaveOrderBookLog("/some/path"))
 }

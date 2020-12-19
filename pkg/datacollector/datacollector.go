@@ -10,16 +10,40 @@ import (
 	"github.com/mshogin/randomtrader/pkg/logger"
 )
 
+var shutdown context.CancelFunc
+
 // Start ...
-func Start() (context.CancelFunc, error) {
-	ctx, cancel := context.WithCancel(context.Background())
+var Start = func() error {
+	var ctx context.Context
+	ctx, shutdown = context.WithCancel(context.Background())
 	c := config.GetDataCollector()
 
 	if err := startOrderBookDumper(ctx, c.OrderBook); err != nil {
-		return cancel, fmt.Errorf("cannot start order book collector: %w", err)
+		return fmt.Errorf("cannot start order book collector: %w", err)
 	}
 
-	return cancel, nil
+	return nil
+}
+
+// Stop ...
+var Stop = func() {
+	shutdown()
+}
+
+// Reload ...
+func Reload(configPath string) error {
+	oldConfig, err := config.Init(configPath)
+	if err != nil {
+		config.SwapConfig(oldConfig)
+		return fmt.Errorf("cannot reload config: %w", err)
+	}
+
+	Stop()
+	if err := Start(); err != nil {
+		return fmt.Errorf("cannot start datacollector: %w", err)
+	}
+
+	return nil
 }
 
 func startOrderBookDumper(ctx context.Context, logConfigs []config.OrderBookLog) error {

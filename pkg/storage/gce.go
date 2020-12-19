@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"sync"
 
 	"cloud.google.com/go/storage"
 	"github.com/mshogin/randomtrader/pkg/config"
@@ -16,10 +17,22 @@ type gceClientImpl struct {
 	cli *storage.Client
 }
 
-var gceClient *gceClientImpl
+var gceClient Storage
+var gceClientSync sync.Mutex
+
+func SwapGCEClient(newClient Storage) Storage {
+	gceClientSync.Lock()
+	defer gceClientSync.Unlock()
+	gceClientPrev := gceClient
+	gceClient = newClient
+	return gceClientPrev
+}
 
 // GetGCEClient ...
-var GetGCEClient = func() (Storage, error) {
+func GetGCEClient() (Storage, error) {
+	gceClientSync.Lock()
+	defer gceClientSync.Unlock()
+
 	if gceClient != nil {
 		return gceClient, nil
 	}

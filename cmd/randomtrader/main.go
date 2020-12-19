@@ -24,7 +24,7 @@ func main() {
 	}
 	flag.Parse()
 
-	if err := config.Init(*configPath); err != nil {
+	if _, err := config.Init(*configPath); err != nil {
 		logger.Errorf("can't initialise configuration: %s", err)
 		os.Exit(1)
 	}

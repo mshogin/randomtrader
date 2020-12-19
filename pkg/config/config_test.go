@@ -50,7 +50,8 @@ func (s *ConfigTestSuite) TestConfigFile() {
 		config = configOrig
 	}()
 
-	s.NoError(Init(f.Name()))
+	_, err = Init(f.Name())
+	s.NoError(err)
 
 	s.Equal(time.Duration(1)*time.Second, GetEventsRaiseInterval())
 	s.Equal("BTC-USD", GetCurrencyPair())
@@ -80,7 +81,8 @@ func (s *ConfigTestSuite) TestDefaultDataCollector() {
 		config = configOrig
 	}()
 
-	s.NoError(Init(f.Name()))
+	_, err = Init(f.Name())
+	s.NoError(err)
 
 	dc := GetDataCollector()
 	s.NotNil(dc)

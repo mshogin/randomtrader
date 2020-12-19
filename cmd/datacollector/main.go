@@ -24,18 +24,23 @@ func main() {
 	}
 	flag.Parse()
 
-	if err := config.Init(*configPath); err != nil {
+	if _, err := config.Init(*configPath); err != nil {
 		logger.Errorf("can't initialise configuration: %s", err)
 		os.Exit(1)
 	}
 
-	cancel, err := datacollector.Start()
-	if err != nil {
+	if err := datacollector.Start(); err != nil {
 		logger.Errorf("cannot run datacollector")
-		cancel()
+		datacollector.Stop()
 		os.Exit(1)
 	}
 
+	go processReload(*configPath)
+
+	Run()
+}
+
+func Run() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
@@ -43,6 +48,20 @@ func main() {
 	<-c
 
 	logger.Infof("shutting down data collector...")
-	cancel()
+	datacollector.Stop()
 	logger.Infof("data collector has been stopped")
+}
+
+// processReload ...
+func processReload(configPath string) {
+	for {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGHUP)
+		<-c
+		if err := datacollector.Reload(configPath); err != nil {
+			logger.Fatalf("cannot reload datacollector: %w", err)
+		} else {
+			logger.Infof("datacollector reloaded successfully")
+		}
+	}
 }

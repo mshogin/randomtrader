@@ -70,30 +70,35 @@ type DataCollector struct {
 }
 
 // Init ...
-func Init(configPath string) error {
+func Init(configPath string) (Configuration, error) {
+	configSync.Lock()
+	defer configSync.Unlock()
+
 	setDefaults()
 
 	file, err := os.Open(configPath)
 	if err != nil {
-		return fmt.Errorf("can't open configuration file %q: %s", configPath, err)
+		return config, fmt.Errorf("can't open configuration file %q: %s", configPath, err)
 	}
 	defer file.Close()
 
 	decoder := json.NewDecoder(file)
 	var c Configuration
 	if err := decoder.Decode(&c); err != nil {
-		return fmt.Errorf("can't parse configuration file %q: %s", configPath, err)
+		return config, fmt.Errorf("can't parse configuration file %q: %s", configPath, err)
 	}
 
-	SwapConfig(c)
-
-	return nil
+	return swapConfig(c), nil
 }
 
 // SwapConfig ...
 func SwapConfig(c Configuration) Configuration {
 	configSync.Lock()
 	defer configSync.Unlock()
+	return swapConfig(c)
+}
+
+func swapConfig(c Configuration) Configuration {
 	oldConfig := config
 	config = c
 	return oldConfig
