@@ -1,3 +1,9 @@
+randomtrader (0.4.4) unstable; urgency=medium
+
+  * Add data collector reload
+
+ -- Mikhail Shogin <mshogin@gmail.com>  So 20. Dez 00:24:49 CET 2020
+
 randomtrader (0.4.2) unstable; urgency=medium
 
   * Add data collector
