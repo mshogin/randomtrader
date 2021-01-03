@@ -1,5 +1,2 @@
 build/package/systemd/randomtrader.service lib/systemd/system/
 cmd/randomtrader/randomtrader usr/bin/
-
-build/package/systemd/randomtrader-datacollector.service lib/systemd/system/
-cmd/datacollector/randomtrader-datacollector usr/bin/

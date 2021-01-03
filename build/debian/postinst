@@ -3,7 +3,8 @@
 adduser --system --group --no-create-home randomtrader
 systemctl daemon-reload
 # systemctl restart randomtrader
-# systemctl restart randomtrader-datacollector
+
 
 mkdir -p /var/log/randomtrader
+mkdir -p /var/lib/randomtrader/plugins
 chown -R randomtrader:randomtrader /var/log/randomtrader

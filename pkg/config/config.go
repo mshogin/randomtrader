@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -17,6 +18,7 @@ const (
 	defaultExchange           = "bitstamp"
 	defaultMinimumOrderSize   = 25.
 	defaultLogsRoot           = "/var/log/randomtrader"
+	defaultLibsRoot           = "/var/lib/randomtrader"
 	defaultConfigsRoot        = "/etc/randomtrader"
 	// BuyEvent ...
 	BuyEvent = "BUY"
@@ -43,8 +45,12 @@ type Configuration struct {
 	EnableDebug    bool
 	TestBrokerMode bool
 
+	EnableTrader    bool
+	EnableCollector bool
+
 	EventRaiseInterval int
 	LogsRoot           string
+	LibsRoot           string
 	ConfigsRoot        string
 	Exchange           string
 	CurrencyPair       string
@@ -96,6 +102,24 @@ func SwapConfig(c Configuration) Configuration {
 	configSync.Lock()
 	defer configSync.Unlock()
 	return swapConfig(c)
+}
+
+func IsTraderEnabled() bool {
+	configSync.Lock()
+	defer configSync.Unlock()
+	return config.EnableTrader
+}
+
+func IsTestModeEnabled() bool {
+	configSync.Lock()
+	defer configSync.Unlock()
+	return config.TestBrokerMode
+}
+
+func IsDataCollectorEnabled() bool {
+	configSync.Lock()
+	defer configSync.Unlock()
+	return config.EnableCollector
 }
 
 func swapConfig(c Configuration) Configuration {
@@ -178,6 +202,12 @@ func GetGCEBucket() string {
 	return config.GCEBucket
 }
 
+func GetPluginsDir() string {
+	configSync.Lock()
+	defer configSync.Unlock()
+	return filepath.Join(config.LibsRoot, "plugins")
+}
+
 func setDefaults() {
 	config.EventRaiseInterval = defaultEventRaiseInterval
 	config.EnableDebug = false
@@ -187,6 +217,7 @@ func setDefaults() {
 	config.MinimumOrderSize = defaultMinimumOrderSize
 	config.LogsRoot = defaultLogsRoot
 	config.ConfigsRoot = defaultConfigsRoot
+	config.LibsRoot = defaultLibsRoot
 }
 
 // GetDataCollector ...

@@ -1,10 +1,14 @@
 {
+    "TestBrokerMode": true,
+    "EnableTrader": true,
+    "EnableCollector": true,
     "EventRaiseInterval": 5,
     "CurrencyPair": "BTC-USD",
     "OrderSize": 27,
     "Exchange": "bitstamp",
     "MinimumOrderSize": 25,
     "LogsRoot": "./tmp",
+    "LibsRoot": "./tmp/lib",
     "ConfigsRoot": "./auth",
     "DataCollector": {
         "OrderBook": [

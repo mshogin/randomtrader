@@ -14,11 +14,14 @@ debian/files
 debian/randomtrader.substvars
 debian/randomtrader
 
-# Randomtrader binary
+# binaries
 cmd/randomtrader/randomtrader
 
 # predict
 predict
+
+# strategies
+pkg/strategy/archimedes
 
 # deployment configuration
 dcf

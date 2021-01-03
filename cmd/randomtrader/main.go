@@ -7,7 +7,11 @@ import (
 	"syscall"
 
 	"github.com/mshogin/randomtrader/pkg/config"
+	"github.com/mshogin/randomtrader/pkg/datacollector"
+	"github.com/mshogin/randomtrader/pkg/exchange"
 	"github.com/mshogin/randomtrader/pkg/logger"
+	"github.com/mshogin/randomtrader/pkg/storage"
+	"github.com/mshogin/randomtrader/pkg/strategy"
 	"github.com/mshogin/randomtrader/pkg/trader"
 )
 
@@ -25,15 +29,33 @@ func main() {
 	flag.Parse()
 
 	if _, err := config.Init(*configPath); err != nil {
-		logger.Errorf("can't initialise configuration: %s", err)
+		logger.Errorf("can't initialize configuration: %s", err)
 		os.Exit(1)
 	}
 
-	if config.IsDebugEnabled() {
-		logger.EnableDebug()
+	if config.IsTestModeEnabled() {
+		exchange.SetupTestGRPCClient()
+		storage.SwapGCEClient(storage.GetGCETestClient())
 	}
 
-	trader.Run()
+	if err := strategy.Init(); err != nil {
+		logger.Errorf("can't initialize strategy: %s", err)
+		os.Exit(1)
+	}
+
+	if config.IsDataCollectorEnabled() {
+		if err := datacollector.Start(); err != nil {
+			logger.Errorf("cannot run datacollector")
+			datacollector.Stop()
+			os.Exit(1)
+		}
+	}
+
+	if config.IsTraderEnabled() {
+		trader.Run()
+	}
+
+	go processReload(*configPath)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -42,6 +64,28 @@ func main() {
 	<-c
 
 	logger.Infof("Shutting down randomtrader...")
-	trader.Shutdown()
+
+	if config.IsTraderEnabled() {
+		trader.Shutdown()
+	}
+
+	if config.IsDataCollectorEnabled() {
+		datacollector.Stop()
+	}
+
 	logger.Infof("Random trader has been stopped")
+}
+
+// processReload ...
+func processReload(configPath string) {
+	for {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGHUP)
+		<-c
+		if err := datacollector.Reload(configPath); err != nil {
+			logger.Fatalf("cannot reload datacollector: %w", err)
+		} else {
+			logger.Infof("datacollector reloaded successfully")
+		}
+	}
 }

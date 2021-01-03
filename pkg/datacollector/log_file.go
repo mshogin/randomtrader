@@ -53,6 +53,7 @@ func createLogFile(conf config.OrderBookLog) (*logFile, error) {
 // Write ...
 func (m *logFile) Write(item interface{}) error {
 	buf, err := json.Marshal(item)
+
 	if err != nil {
 		return fmt.Errorf("cannot marshal order book to JSON: %w", err)
 	}

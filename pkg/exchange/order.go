@@ -3,6 +3,7 @@ package exchange
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/mshogin/randomtrader/pkg/bidcontext"
@@ -10,6 +11,25 @@ import (
 	"github.com/mshogin/randomtrader/pkg/utils"
 	"github.com/thrasher-corp/gocryptotrader/gctrpc"
 )
+
+const orderBookHistorySize = 60
+
+type (
+	orderBookItem struct {
+		Amount float64
+		Price  float64
+	}
+
+	// OrderBook ...
+	OrderBook struct {
+		Asks     []orderBookItem
+		Bids     []orderBookItem
+		DateTime time.Time
+	}
+)
+
+var orderBookHistory = make([]*OrderBook, 0)
+var orderBookHistorySync sync.Mutex
 
 // ExecuteContext ...
 func ExecuteContext(ctx *bidcontext.BidContext) error {
@@ -46,20 +66,6 @@ func ExecuteContext(ctx *bidcontext.BidContext) error {
 	return nil
 }
 
-type (
-	orderBookItem struct {
-		Amount float64
-		Price  float64
-	}
-
-	// OrderBook ...
-	OrderBook struct {
-		Asks     []orderBookItem
-		Bids     []orderBookItem
-		DateTime time.Time
-	}
-)
-
 // GetOrderBook ...
 func GetOrderBook() (*OrderBook, error) {
 	c, err := setupClient()
@@ -95,5 +101,26 @@ func GetOrderBook() (*OrderBook, error) {
 		ob.Bids = append(ob.Bids,
 			orderBookItem{Amount: bid.Amount, Price: bid.Price})
 	}
+
+	addOrderBookItemToHistory(&ob)
+
 	return &ob, nil
+}
+
+func addOrderBookItemToHistory(ob *OrderBook) {
+	orderBookHistorySync.Lock()
+	defer orderBookHistorySync.Unlock()
+	if len(orderBookHistory) == orderBookHistorySize {
+		orderBookHistory = orderBookHistory[1:]
+	}
+	orderBookHistory = append(orderBookHistory, ob)
+}
+
+// GetOrderBookHistory ...
+func GetOrderBookHistory() []*OrderBook {
+	orderBookHistorySync.Lock()
+	defer orderBookHistorySync.Unlock()
+	h := make([]*OrderBook, len(orderBookHistory))
+	copy(h, orderBookHistory)
+	return h
 }

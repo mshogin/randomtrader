@@ -9,7 +9,7 @@ ifndef $(GOPATH)
 endif
 LINTBIN = $(GOPATH)/bin/golangci-lint
 
-.PHONY: all dep build clean test coverage coverhtml lint
+.PHONY: all dep build clean test coverage coverhtml lint run
 
 all: build
 
@@ -45,7 +45,12 @@ dep: ## Get the dependencies
 
 build: ## Build the binary file
 	go build -tags=prod -o cmd/randomtrader/randomtrader cmd/randomtrader/main.go
-	go build -tags=prod -o cmd/datacollector/randomtrader-datacollector cmd/datacollector/main.go
+
+run:
+	go build -tags=prod -o cmd/randomtrader/randomtrader cmd/randomtrader/main.go
+	go build -tags=prod -buildmode=plugin -o tmp/lib/plugins/archimedes.so pkg/strategy/archimedes/archimedes.go
+	cmd/randomtrader/randomtrader -config configs/config_example.json
+
 
 clean: ## Remove previous build
 	rm -f cmd/randomtrader/randomtrader

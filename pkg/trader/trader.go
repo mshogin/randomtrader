@@ -9,8 +9,7 @@ import (
 )
 
 var (
-	doneEventLoop    chan bool = make(chan bool)
-	startedEventLoop chan bool = make(chan bool)
+	doneEventLoop chan bool = make(chan bool)
 )
 
 // Run ...
@@ -21,8 +20,6 @@ func Run() {
 		runnig := true
 		for runnig {
 			select {
-			case <-startedEventLoop:
-				<-startedEventLoop
 			case <-doneEventLoop:
 				runnig = false
 			case <-bidAskTimer.C:
@@ -31,9 +28,6 @@ func Run() {
 		}
 		<-doneEventLoop
 	}()
-
-	startedEventLoop <- true
-	startedEventLoop <- true
 }
 
 // Shutdown ...

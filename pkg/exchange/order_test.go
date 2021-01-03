@@ -39,3 +39,17 @@ func TestGetOrderBook(t *testing.T) {
 
 	s.Equal(currentTime, ob.DateTime)
 }
+
+func TestGetOrderBookHistory(t *testing.T) {
+	s := assert.New(t)
+
+	size := len(GetOrderBookHistory())
+	addOrderBookItemToHistory(&OrderBook{})
+	s.Len(GetOrderBookHistory(), size+1)
+
+	for i := 0; i < orderBookHistorySize+10; i++ {
+		addOrderBookItemToHistory(&OrderBook{})
+	}
+
+	s.Len(GetOrderBookHistory(), orderBookHistorySize)
+}

@@ -2,6 +2,7 @@ package exchange
 
 import (
 	"context"
+	"math/rand"
 
 	"github.com/thrasher-corp/gocryptotrader/gctrpc"
 	"google.golang.org/grpc"
@@ -59,17 +60,27 @@ func (m *testClient) SubmitOrder(ctx context.Context, in *gctrpc.SubmitOrderRequ
 
 // GetOrderbook ...
 func (m *testClient) GetOrderbook(ctx context.Context, in *gctrpc.GetOrderbookRequest, opts ...grpc.CallOption) (*gctrpc.OrderbookResponse, error) {
+	bidPrice := 20000 + rand.Float64()*(30000-20000)
+	askPrice := 20000 + rand.Float64()*(30000-20000)
 	return &gctrpc.OrderbookResponse{
 		Asks: []*gctrpc.OrderbookItem{
 			{
-				Price:  testPriceValue,
-				Amount: testAmountValue,
+				Price:  askPrice - 100,
+				Amount: rand.Float64(),
+			},
+			{
+				Price:  askPrice,
+				Amount: rand.Float64(),
 			},
 		},
 		Bids: []*gctrpc.OrderbookItem{
 			{
-				Price:  testPriceValue,
-				Amount: testAmountValue,
+				Price:  bidPrice - 100,
+				Amount: rand.Float64(),
+			},
+			{
+				Price:  bidPrice,
+				Amount: rand.Float64(),
 			},
 		},
 	}, nil
