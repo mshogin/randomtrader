@@ -8,12 +8,15 @@ import (
 
 	"github.com/mshogin/randomtrader/pkg/bidcontext"
 	"github.com/mshogin/randomtrader/pkg/config"
-	"github.com/mshogin/randomtrader/pkg/logger"
 )
+
+const processContextCallbackName = "ProcessContext"
+const runRoutineCallbackName = "RunRoutine"
 
 type Processor func(ctx *bidcontext.BidContext) error
 
-var plugins = map[string]Processor{}
+var pluginContextProcessors = map[string]Processor{}
+var pluginRoutines = map[string]func(){}
 
 // Init ...
 func Init() error {
@@ -29,19 +32,21 @@ func Init() error {
 			return fmt.Errorf("%q is not a go plugin: %w", pPath, err)
 		}
 
-		s, err := p.Lookup("ProcessContext")
-		if err != nil {
-			logger.Infof("plugin %q is not a strategy plugin: %w", pPath, err)
-			continue
+		s, err := p.Lookup(processContextCallbackName)
+		if err == nil {
+			cp, ok := s.(func(ctx *bidcontext.BidContext) error)
+			if ok {
+				pluginContextProcessors[f.Name()] = cp
+			}
 		}
 
-		cp, ok := s.(func(ctx *bidcontext.BidContext) error)
-		if !ok {
-			logger.Infof("plugin %q does not implement ContextProcessor interface: %w", pPath, err)
-			continue
+		r, err := p.Lookup(runRoutineCallbackName)
+		if err == nil {
+			routine, ok := r.(func())
+			if ok {
+				go routine()
+			}
 		}
-
-		plugins[f.Name()] = cp
 	}
 	return nil
 }

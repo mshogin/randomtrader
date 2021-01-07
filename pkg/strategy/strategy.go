@@ -11,7 +11,7 @@ func ProcessContext(ctx *bidcontext.BidContext) error {
 		return nil
 	}
 
-	for name, processContextCallback := range plugins {
+	for name, processContextCallback := range pluginContextProcessors {
 		if err := processContextCallback(ctx); err != nil {
 			logger.Errorf("strategy %q finished with error: %w", name, err)
 		}

@@ -21,11 +21,11 @@ func TestProcessContext(t *testing.T) {
 	s.Empty(ctx.Strategy)
 	s.Empty(ctx.Event)
 
-	pluginsOrig := plugins
+	pluginsOrig := pluginContextProcessors
 	defer func() {
-		plugins = pluginsOrig
+		pluginContextProcessors = pluginsOrig
 	}()
-	plugins["test"] = processContextStub
+	pluginContextProcessors["test"] = processContextStub
 
 	s.NoError(ProcessContext(ctx))
 

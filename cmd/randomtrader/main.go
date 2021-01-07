@@ -62,7 +62,6 @@ func main() {
 
 	logger.Infof("Random trader has been started")
 	<-c
-
 	logger.Infof("Shutting down randomtrader...")
 
 	if config.IsTraderEnabled() {
@@ -81,11 +80,15 @@ func processReload(configPath string) {
 	for {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGHUP)
+
 		<-c
-		if err := datacollector.Reload(configPath); err != nil {
-			logger.Fatalf("cannot reload datacollector: %w", err)
-		} else {
-			logger.Infof("datacollector reloaded successfully")
+
+		if config.IsDataCollectorEnabled() {
+			if err := datacollector.Reload(configPath); err != nil {
+				logger.Fatalf("cannot reload datacollector: %w", err)
+			} else {
+				logger.Infof("datacollector reloaded successfully")
+			}
 		}
 	}
 }
