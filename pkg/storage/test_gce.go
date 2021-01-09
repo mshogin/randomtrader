@@ -11,3 +11,7 @@ func GetGCETestClient() Storage {
 func (m *testGCEClient) SaveObject(prefix, fpath string) error {
 	return nil
 }
+
+func (m *testGCEClient) DownloadObjects(prefix, fpath string) error {
+	return nil
+}

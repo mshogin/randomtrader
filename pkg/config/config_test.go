@@ -88,3 +88,33 @@ func (s *ConfigTestSuite) TestDefaultDataCollector() {
 	s.NotNil(dc)
 	s.Nil(dc.OrderBook)
 }
+
+func (s *ConfigTestSuite) TestStrategies() {
+	f, err := ioutil.TempFile("", "")
+	s.NoError(err)
+	s.NoError(f.Close())
+
+	content := []byte(`{
+        "Strategies": {
+            "archimedes": {
+                "Enabled": true,
+                "LogsDir": "/tmp/archimedes/logs/"
+            }
+        }
+}`)
+	s.NoError(ioutil.WriteFile(f.Name(), content, os.FileMode(644)))
+
+	configOrig := config
+	defer func() {
+		config = configOrig
+	}()
+
+	_, err = Init(f.Name())
+	s.NoError(err)
+
+	archConf, ok := GetStrategyConfig("archimedes")
+	s.True(ok)
+	s.NotNil(archConf)
+	s.True(archConf.Enabled)
+	s.Equal("/tmp/archimedes/logs/", archConf.LogsDir)
+}

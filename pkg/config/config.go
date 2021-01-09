@@ -40,6 +40,11 @@ var EnabledEvents = []Event{BuyEvent, SellEvent}
 var config = Configuration{}
 var configSync sync.Mutex
 
+type StrategyConfig struct {
+	Enabled bool
+	LogsDir string
+}
+
 // Configuration ...
 type Configuration struct {
 	EnableDebug    bool
@@ -61,6 +66,8 @@ type Configuration struct {
 
 	GCEBucket          string
 	ServiceKeyFilename string
+
+	Strategies map[string]*StrategyConfig
 }
 
 // OrderBookLog ...
@@ -102,6 +109,15 @@ func SwapConfig(c Configuration) Configuration {
 	configSync.Lock()
 	defer configSync.Unlock()
 	return swapConfig(c)
+}
+
+func GetStrategyConfig(name string) (*StrategyConfig, bool) {
+	configSync.Lock()
+	defer configSync.Unlock()
+	if config.Strategies == nil {
+		return nil, false
+	}
+	return config.Strategies[name], true
 }
 
 func IsTraderEnabled() bool {
