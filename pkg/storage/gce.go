@@ -80,6 +80,7 @@ func (m *gceClientImpl) DownloadObjects(prefix, targetDir string) error {
 
 	q := &storage.Query{Prefix: prefix}
 	bucket := m.cli.Bucket(config.GetGCEBucket())
+
 	it := bucket.Objects(ctx, q)
 
 	var wg sync.WaitGroup

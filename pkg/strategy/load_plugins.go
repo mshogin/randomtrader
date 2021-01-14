@@ -8,10 +8,12 @@ import (
 
 	"github.com/mshogin/randomtrader/pkg/bidcontext"
 	"github.com/mshogin/randomtrader/pkg/config"
+	"github.com/mshogin/randomtrader/pkg/logger"
 )
 
 const processContextCallbackName = "ProcessContext"
 const runRoutineCallbackName = "RunRoutine"
+const strategyNameSymbol = "StrategyName"
 
 type Processor func(ctx *bidcontext.BidContext) error
 
@@ -30,6 +32,22 @@ func Init() error {
 		p, err := plugin.Open(pPath)
 		if err != nil {
 			return fmt.Errorf("%q is not a go plugin: %w", pPath, err)
+		}
+
+		n, err := p.Lookup(strategyNameSymbol)
+		if err != nil {
+			logger.Errorf("cannot find plugin name: %s", err)
+		}
+
+		strategyName := *n.(*string)
+		c, ok := config.GetStrategyConfig(strategyName)
+		if !ok {
+			logger.Errorf("cannot find config for strategy %q", f.Name())
+			continue
+		}
+		if !c.Enabled {
+			logger.Infof("strategy %q is disabled", strategyName)
+			continue
 		}
 
 		s, err := p.Lookup(processContextCallbackName)

@@ -1,15 +1,15 @@
 {
-    "TestBrokerMode": true,
-    "EnableTrader": true,
-    "EnableCollector": true,
+    "TestBrokerMode": false,
+    "EnableTrader": false,
+    "EnableCollector": false,
     "EventRaiseInterval": 5,
     "CurrencyPair": "BTC-USD",
     "OrderSize": 27,
     "Exchange": "bitstamp",
     "MinimumOrderSize": 25,
-    "LogsRoot": "./tmp",
-    "LibsRoot": "./tmp/lib",
-    "ConfigsRoot": "./auth",
+    "LogsRoot": "/var/log/randomtrader/",
+    "LibsRoot": "/var/lib/randomtrader/",
+    "ConfigsRoot": "/etc/randomtrader/",
     "DataCollector": {
         "OrderBook": [
             {
@@ -23,6 +23,10 @@
         ]
     },
     "GCEBucket": "randomtrader-datacollector",
-	  "ServiceKeyFilename": "gce-bucket-service-key.json"
-
+	  "ServiceKeyFilename": "gce-bucket-service-key.json",
+    "Strategies": {
+        "archimedes": {
+            "Enabled": true
+        }
+    }
 }

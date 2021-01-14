@@ -34,6 +34,7 @@ func main() {
 	}
 
 	if config.IsTestModeEnabled() {
+		logger.Infof("Running in test mode")
 		exchange.SetupTestGRPCClient()
 		storage.SwapGCEClient(storage.GetGCETestClient())
 	}
@@ -49,10 +50,14 @@ func main() {
 			datacollector.Stop()
 			os.Exit(1)
 		}
+	} else {
+		logger.Infof("Data collector is disabled")
 	}
 
 	if config.IsTraderEnabled() {
 		trader.Run()
+	} else {
+		logger.Infof("Trader engine is disabled")
 	}
 
 	go processReload(*configPath)

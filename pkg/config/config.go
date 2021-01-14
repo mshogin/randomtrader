@@ -42,7 +42,6 @@ var configSync sync.Mutex
 
 type StrategyConfig struct {
 	Enabled bool
-	LogsDir string
 }
 
 // Configuration ...

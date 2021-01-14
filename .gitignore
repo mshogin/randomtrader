@@ -21,7 +21,7 @@ cmd/randomtrader/randomtrader
 predict
 
 # strategies
-pkg/strategy/archimedes
+pkg/strategy/randomtrader-archimedes
 
 # deployment configuration
 dcf
