@@ -97,8 +97,8 @@ func (s *ConfigTestSuite) TestStrategies() {
 	content := []byte(`{
         "Strategies": {
             "archimedes": {
-                "Enabled": true,
-                "LogsDir": "/tmp/archimedes/logs/"
+                "ProcessingEnabled": true,
+                "RoutineEnabled": true
             }
         }
 }`)
@@ -115,6 +115,6 @@ func (s *ConfigTestSuite) TestStrategies() {
 	archConf, ok := GetStrategyConfig("archimedes")
 	s.True(ok)
 	s.NotNil(archConf)
-	s.True(archConf.Enabled)
-	s.Equal("/tmp/archimedes/logs/", archConf.LogsDir)
+	s.True(archConf.ProcessingEnabled)
+	s.True(archConf.RoutineEnabled)
 }

@@ -45,24 +45,38 @@ func Init() error {
 			logger.Errorf("cannot find config for strategy %q", f.Name())
 			continue
 		}
-		if !c.Enabled {
-			logger.Infof("strategy %q is disabled", strategyName)
-			continue
-		}
 
-		s, err := p.Lookup(processContextCallbackName)
-		if err == nil {
-			cp, ok := s.(func(ctx *bidcontext.BidContext) error)
-			if ok {
-				pluginContextProcessors[f.Name()] = cp
+		if !c.ProcessingEnabled {
+			logger.Infof("processing for strategy %q is disabled", strategyName)
+		} else {
+			logger.Infof("processing for strategy %q is enabled", strategyName)
+			s, err := p.Lookup(processContextCallbackName)
+			if err == nil {
+				cp, ok := s.(func(ctx *bidcontext.BidContext) error)
+				if ok {
+					pluginContextProcessors[f.Name()] = cp
+				} else {
+					logger.Errorf("cannot cast %q symbol from plugin %q to BidContext processor", processContextCallbackName, strategyName)
+				}
+			} else {
+				logger.Errorf("cannot %q symbol in the plugin %q: %w", processContextCallbackName, strategyName, err)
 			}
 		}
 
-		r, err := p.Lookup(runRoutineCallbackName)
-		if err == nil {
-			routine, ok := r.(func())
-			if ok {
-				go routine()
+		if !c.RoutineEnabled {
+			logger.Infof("routine for strategy %q is disabled", strategyName)
+		} else {
+			logger.Infof("routine for strategy %q is enabled", strategyName)
+			r, err := p.Lookup(runRoutineCallbackName)
+			if err == nil {
+				routine, ok := r.(func())
+				if ok {
+					go routine()
+				} else {
+					logger.Errorf("cannot cast %q symbol from plugin %q to routine processor", runRoutineCallbackName, strategyName)
+				}
+			} else {
+				logger.Errorf("cannot %q symbol in the plugin %q: %w", runRoutineCallbackName, strategyName, err)
 			}
 		}
 	}

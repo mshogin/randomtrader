@@ -45,15 +45,15 @@ dep: ## Get the dependencies
 
 build: ## Build the binary file
 	go build -tags=prod -o cmd/randomtrader/randomtrader cmd/randomtrader/main.go
-	go build -tags=prod -buildmode=plugin -o pkg/strategy/randomtrader-archimedes/archimedes.so pkg/strategy/randomtrader-archimedes/archimedes.go
+	go build -tags=prod -buildmode=plugin -o pkg/strategy/randomtrader-archimedes/randomtrader-archimedes.so pkg/strategy/randomtrader-archimedes/archimedes.go
 
 localrun:
 	go build -tags=prod -o cmd/randomtrader/randomtrader cmd/randomtrader/main.go
-	go build -tags=prod -buildmode=plugin -o /tmp/archimedes.so pkg/strategy/randomtrader-archimedes/archimedes.go
+	go build -tags=prod -buildmode=plugin -o /tmp/randomtrader-archimedes.so pkg/strategy/randomtrader-archimedes/archimedes.go
 	sudo cp cmd/randomtrader/randomtrader /usr/bin/
-	sudo cp /tmp/archimedes.so /var/lib/randomtrader/plugins
+	sudo cp /tmp/randomtrader-archimedes.so /var/lib/randomtrader/plugins
 	sudo cp configs/config_example.json /etc/randomtrader/config.json
-	sudo cp -rf pkg/strategy/archimedes /var/lib/randomtrader/
+	sudo cp -rf pkg/strategy/randomtrader-archimedes /var/lib/randomtrader/
 	/usr/bin/randomtrader
 
 

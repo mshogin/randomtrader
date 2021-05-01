@@ -56,12 +56,12 @@ func Infof(format string, args ...interface{}) {
 
 // ProcessContext ...
 func ProcessContext(ctx *bidcontext.BidContext) error {
-	buf, err := json.MarshalIndent(ctx, "", "    ")
+	_, err := json.MarshalIndent(ctx, "", "    ")
 	if err != nil {
 		err = fmt.Errorf("cannot dump context: %w", err)
 		Errorf(err.Error())
 		return err
 	}
-	Infof(string(buf))
+	// Infof(string(buf))
 	return nil
 }

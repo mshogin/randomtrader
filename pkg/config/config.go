@@ -41,7 +41,8 @@ var config = Configuration{}
 var configSync sync.Mutex
 
 type StrategyConfig struct {
-	Enabled bool
+	ProcessingEnabled bool
+	RoutineEnabled    bool
 }
 
 // Configuration ...
@@ -116,7 +117,8 @@ func GetStrategyConfig(name string) (*StrategyConfig, bool) {
 	if config.Strategies == nil {
 		return nil, false
 	}
-	return config.Strategies[name], true
+	s, ok := config.Strategies[name]
+	return s, ok
 }
 
 func IsTraderEnabled() bool {
@@ -223,6 +225,12 @@ func GetPluginsDir() string {
 	return filepath.Join(config.LibsRoot, "plugins")
 }
 
+func GetModelsDir() string {
+	configSync.Lock()
+	defer configSync.Unlock()
+	return filepath.Join(config.LibsRoot, "models")
+}
+
 func setDefaults() {
 	config.EventRaiseInterval = defaultEventRaiseInterval
 	config.EnableDebug = false
@@ -254,4 +262,10 @@ func (m OrderBookLog) GetRotateInterval() time.Duration {
 	configSync.Lock()
 	defer configSync.Unlock()
 	return time.Duration(m.RotateInterval) * time.Second
+}
+
+func GetLibsRoot() string {
+	configSync.Lock()
+	defer configSync.Unlock()
+	return config.LibsRoot
 }

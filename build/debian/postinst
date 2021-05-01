@@ -4,7 +4,5 @@ adduser --system --group --no-create-home randomtrader
 systemctl daemon-reload
 # systemctl restart randomtrader
 
-
-mkdir -p /var/log/randomtrader
-mkdir -p /var/lib/randomtrader/plugins
 chown -R randomtrader:randomtrader /var/log/randomtrader
+chown -R randomtrader:randomtrader /var/lib/randomtrader

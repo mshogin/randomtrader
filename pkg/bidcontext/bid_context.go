@@ -23,7 +23,8 @@ type BidContext struct {
 	AskPrice float64
 	BidPrice float64
 
-	Strategy string
+	Strategy         string
+	StrategyBidPrice float64
 
 	OrderID string
 }
